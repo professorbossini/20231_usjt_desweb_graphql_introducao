@@ -12,6 +12,17 @@ const schema = createSchema({
       age: Int!
       ofAge: Boolean!
       salary: Float
+      EffectiveJava: Livro!
+      boasVindas (nome: String): String!
+      notas: [Int!]!
+      somaNumeros(numeros: [Float!]): Float!
+    }
+    type Livro {
+      id: ID!
+      titulo: String!
+      genero: String!
+      edicao: Int
+      preco: Float
     }
   `,
   resolvers: {
@@ -26,7 +37,27 @@ const schema = createSchema({
       location: () => "Rua B, numero 1",
       age: () => 1,
       ofAge: () => true,
-      salary: () => 400
+      salary: () => 400,
+      EffectiveJava () {
+        return {
+          id: '123456',
+          titulo: 'Effective Java',
+          genero: 'Linguagem de Programacao',
+          edicao: 4,
+          preco: 112.50
+        }
+      },
+      boasVindas(parent, args, ctx, info) {
+        // console.log ("parent: " + JSON.stringify(parent))
+        // console.log ("ags: " + JSON.stringify(args))
+        // console.log ("ctx: " + ctx)
+        // console.log ("info: " + JSON.stringify(info))
+
+        return `Bem-vindo ao mundo do desenvolvimento, ${args.nome? args.nome : 'visitante'}`
+      },
+      notas(parent, args, ctx, info) {
+        return [1, 2, 3, 4]
+      }
     }
   }
 })
