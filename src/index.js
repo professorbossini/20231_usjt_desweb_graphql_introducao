@@ -2,9 +2,59 @@
 import { createSchema, createYoga } from 'graphql-yoga'
 import { createServer } from 'node:http'
 
+const usuarios = [
+  {
+    id: '100',
+    nome: 'Jose',
+    livros: [{
+      id: '1',
+      titulo: 'Effective Java',
+      genero: "Técnico",
+      edicao: 3,
+      preco: 39.99
+    },
+    {
+      id: '2',
+      titulo: "Concrete Mathematics",
+      genero: "Técnico",
+      edicao: 1,
+      preco: 89.99
+    }]
+  },
+  {
+    id: '101',
+    nome: 'Maria',
+    livros: [{
+      id: '5',
+      titulo: 'Programming Challenges',
+      genero: "Técnico",
+      edicao: 1,
+      preco: 39.99
+    }]
+  }
+]
+
+const livros = [
+  {
+    id: '1',
+    titulo: 'Effective Java',
+    genero: "Técnico",
+    edicao: 3,
+    preco: 39.99
+  },
+  {
+    id: '2',
+    titulo: "Concrete Mathematics",
+    genero: "Técnico",
+    edicao: 1,
+    preco: 89.99
+  }
+];
+
 const schema = createSchema({
   typeDefs: `
     type Query {
+      adicionarNumeros(numeros: [Float!]): Float!
       hello: String!
       name: String!
       id: ID!
@@ -15,8 +65,15 @@ const schema = createSchema({
       EffectiveJava: Livro!
       boasVindas (nome: String): String!
       notas: [Int!]!
-      somaNumeros(numeros: [Float!]): Float!
+      livros(precoMaximo: Float!): [Livro!]!
+      usuarios: [Usuario!]
     }
+    type Usuario {
+      id: ID!
+      nome: String
+      idade: Int
+      livros: [Livro!]
+    },
     type Livro {
       id: ID!
       titulo: String!
@@ -52,11 +109,22 @@ const schema = createSchema({
         // console.log ("ags: " + JSON.stringify(args))
         // console.log ("ctx: " + ctx)
         // console.log ("info: " + JSON.stringify(info))
-
         return `Bem-vindo ao mundo do desenvolvimento, ${args.nome? args.nome : 'visitante'}`
       },
       notas(parent, args, ctx, info) {
         return [1, 2, 3, 4]
+      },
+      adicionarNumeros (parent, args, ctx, info) {
+        return args.numeros.length === 0 ? 0 :
+          args.numeros.reduce((ac, atual) => {return ac + atual})
+      },
+      livros (parent, args, ctx, info) {
+        return livros.filter((l) => {
+          return l.preco <= args.precoMaximo
+        })
+      },
+      usuarios() {
+        return usuarios;
       }
     }
   }
